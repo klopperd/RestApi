@@ -1,0 +1,12 @@
+{
+  "name": "Start on Heroku: Go",
+  "description": "Go restapi App",
+  "keywords": [
+    "restapi",
+    "go",
+    "sample",
+    "example"
+  ],
+  "website": "http://github.com/heroku/restapi",
+  "repository": "http://github.com/heroku/restapi"
+}
