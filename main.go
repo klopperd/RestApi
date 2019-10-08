@@ -108,10 +108,3 @@ func main() {
 	// Start server
 	log.Fatal(http.ListenAndServe(":3000", r))
 }
-
-// Request sample
-// {
-// 	"isbn":"4545454",
-// 	"title":"Book Three",
-// 	"author":{"firstname":"Harry","lastname":"White"}
-// }
