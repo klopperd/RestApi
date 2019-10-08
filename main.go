@@ -95,6 +95,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	s2 := template.Must(template.ParseFiles("about.html"))
 	s2.Execute(w, nil)
 	fmt.Println("about executed")
+	log.Println("about executed")
 }
 
 // Main function
@@ -115,6 +116,8 @@ func main() {
 	r.HandleFunc("/books/{id}", updateBook).Methods("PUT")
 	r.HandleFunc("/books/{id}", deleteBook).Methods("DELETE")
 
+	port := os.Getenv("PORT")
+	log.Println("port = ", port)
 	// Start server
-	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), r))
+	log.Fatal(http.ListenAndServe(":"+port, r))
 }
