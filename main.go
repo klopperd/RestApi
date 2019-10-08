@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"net/http"
 	"strconv"
+	"text/template"
 
 	"github.com/gorilla/mux"
 )
@@ -89,6 +90,12 @@ func deleteBook(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(books)
 }
 
+func index(w http.ResponseWriter, r *http.Request) {
+	s2 := template.Must(template.ParseFiles("about.html"))
+	s2.Execute(w, nil)
+	fmt.Println("about executed")
+}
+
 // Main function
 func main() {
 	// Init router
@@ -99,6 +106,8 @@ func main() {
 	books = append(books, Book{ID: "2", Isbn: "454555", Title: "Book Two", Author: &Author{Firstname: "Steve", Lastname: "Smith"}})
 
 	// Route handles & endpoints
+
+	r.HandleFunc("/", index)
 	r.HandleFunc("/books", getBooks).Methods("GET")
 	r.HandleFunc("/books/{id}", getBook).Methods("GET")
 	r.HandleFunc("/books", createBook).Methods("POST")
