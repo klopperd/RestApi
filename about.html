@@ -7,6 +7,30 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Hello there from my api</h1>
+    <h1>My REST-API</h1>
+    <br>
+    To access your website use : https://stark-citadel-41801.herokuapp.com
+    Where stark-citadel-41801 is replaced with your app name
+    <br>
+    <h3>This is to directly open your web app</h3>
+    $ heroku open
+    <h3>This is to push latest version to Heroku</h3>
+    $ git push heroku master
+    <h3>This is to see your full log</h3>
+    $ heroku logs --tail
+    <h3>This is to view only app logs</h3>
+    $ heroku logs --source app --tail
+    <h3>This is to build your app for use on Heroku (On Heroku it needs the app name without the .exe</h3>
+    $ go build -o bin/restapi -v .
+    <h3>This is for local use</h3>
+    $ go build -o bin/restapi.exe -v .
+    <h3>This is to get your database info</h3>
+    $ heroku config:get DATABASE_URL
+    <h2>Very important in go program</h2>
+    <h4>To run on Heroku (they don't allow setting port) : port := os.Getenv("PORT")</h4>
+    <h4>To run locally you need to specify port : port := "3000"</h4></h3>
+    <br>
+    <br>
+    <li><a href="https://medium.com/@vapurrmaid/getting-started-with-heroku-postgres-and-pgadmin-run-on-part-2-90d9499ed8fb" target="_blank">Nice Link for working with Heroku Postgre DB</a></li>
 </body>
 </html>
