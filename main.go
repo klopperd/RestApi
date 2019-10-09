@@ -95,7 +95,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	s2 := template.Must(template.ParseFiles("about.html"))
 	s2.Execute(w, nil)
 	fmt.Println("about executed")
-	log.Println("about executed")
+	//log.Println("about executed")
 }
 
 // Main function
