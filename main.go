@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -11,6 +12,7 @@ import (
 	"text/template"
 
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 )
 
 // Book struct (Model)
@@ -27,14 +29,64 @@ type Author struct {
 	Lastname  string `json:"lastname"`
 }
 
+const (
+	host     = "ec2-54-243-253-181.compute-1.amazonaws.com"
+	port     = 5432
+	user     = "hkuncdjazivhgt"
+	password = "a6211ecc634a041ac919d9d0dc50a8a0ec9acae6448be9baee95b4a472c8a152"
+	dbname   = "dboqmi8lc7fu3t"
+)
+
 // Init books var as a slice Book struct
 var books []Book
+var psqlInfo = fmt.Sprintf("host=%s port=%d user=%s "+
+	"password=%s dbname=%s sslmode=require",
+	host, port, user, password, dbname)
 
 // Get all books
 func getBooks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(books)
 	fmt.Println("Asked for books")
+}
+
+func getDBBooks(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	fmt.Println("Successfully connected!")
+
+	tsql := fmt.Sprintf("SELECT * FROM books;")
+	rows, err := db.Query(tsql)
+	if err != nil {
+		fmt.Println("Error reading rows: " + err.Error())
+		//return -1, err
+	}
+	defer rows.Close()
+	count := 0
+	for rows.Next() {
+		var Title, Id string
+
+		err := rows.Scan(&Id, &Title)
+		if err != nil {
+			fmt.Println("Error reading rows: " + err.Error())
+			//return -1, err
+		}
+		//fmt.Printf("%s \t %s \t %s \n", ReceiveTime, Message, DT)
+		fmt.Printf("%s  %s \n", Id, Title)
+		books[count].Title = Title
+		count++
+	}
+
+	db.Close()
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(books)
+	fmt.Println("Asked for books")
+
 }
 
 // Get single book
@@ -98,8 +150,41 @@ func index(w http.ResponseWriter, r *http.Request) {
 	//log.Println("about executed")
 }
 
+func connDB() {
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	fmt.Println("Successfully connected!")
+
+	tsql := fmt.Sprintf("SELECT * FROM books;")
+	rows, err := db.Query(tsql)
+	if err != nil {
+		fmt.Println("Error reading rows: " + err.Error())
+		//return -1, err
+	}
+	defer rows.Close()
+	count := 0
+	for rows.Next() {
+		var Title, Id string
+
+		err := rows.Scan(&Id, &Title)
+		if err != nil {
+			fmt.Println("Error reading rows: " + err.Error())
+			//return -1, err
+		}
+		//fmt.Printf("%s \t %s \t %s \n", ReceiveTime, Message, DT)
+		fmt.Printf("%s  %s \n", Id, Title)
+		count++
+	}
+	//return count, nil
+}
+
 // Main function
 func main() {
+	connDB()
 	// Init router
 	r := mux.NewRouter()
 
@@ -111,6 +196,7 @@ func main() {
 
 	r.HandleFunc("/", index)
 	r.HandleFunc("/books", getBooks).Methods("GET")
+	r.HandleFunc("/dbbooks", getDBBooks).Methods("GET")
 	r.HandleFunc("/books/{id}", getBook).Methods("GET")
 	r.HandleFunc("/books", createBook).Methods("POST")
 	r.HandleFunc("/books/{id}", updateBook).Methods("PUT")
